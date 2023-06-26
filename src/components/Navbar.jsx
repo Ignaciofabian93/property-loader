@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Drawer,
@@ -8,23 +8,33 @@ import {
   AppBar,
   Box,
   Toolbar,
-  Typography,
   Button,
+  IconButton,
+  ListItemIcon,
 } from "@mui/material";
-import logo from "../assets/images/logo.png";
-import menu from "../assets/icons/list.svg";
+import MenuIcon from "@mui/icons-material/Menu";
+import HomeIcon from "@mui/icons-material/Home";
+import AddBoxIcon from "@mui/icons-material/AddBox";
+import { Images } from "../constants/images";
+import { AuthContext } from "../context/LoginContext";
 
 export default function Navbar() {
   const navigate = useNavigate();
+  const auth = useContext(AuthContext);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
   };
 
-  const goToLogin = () => {
-    navigate("/login");
+  const navigateToProperties = () => {
+    navigate("/");
   };
+
+  const navigateToAddProperty = () => {
+    navigate("/agregar-propiedad");
+  };
+
   return (
     <Fragment>
       <Box sx={{ flexGrow: 1 }}>
@@ -33,82 +43,78 @@ export default function Navbar() {
           sx={{ backgroundColor: "#00252d", padding: "4px 8px" }}
         >
           <Toolbar>
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <img
-                className="icon"
-                src={menu}
-                alt="menu icon"
-                width={30}
-                height={30}
-                onClick={toggleDrawer}
-              />
-            </Box>
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                marginLeft: "40px",
-              }}
-            >
-              <img src={logo} alt="logo" style={{ width: 140, height: 60 }} />
-            </Box>
-            <Typography component="div" variant="div" sx={{ flexGrow: 1 }}>
-              <ul
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "flex-end",
-                  padding: 0,
-                  marginRight: "40px",
-                }}
-              >
-                <li style={{ margin: "0 10px" }}>Propiedades</li>
-                <li style={{ margin: "0 10px" }}>Agregar propiedad</li>
-              </ul>
-            </Typography>
-            <Button
-              sx={{
-                textTransform: "capitalize",
-                fontSize: "14px",
-                fontWeight: 600,
-                backgroundColor: "#f1f1f1",
-                color: "#00252d",
-              }}
-              variant="contained"
-              onClick={goToLogin}
+            <IconButton
+              edge="start"
               color="inherit"
+              aria-label="menu"
+              onClick={toggleDrawer}
+              sx={{ marginRight: "16px" }}
             >
-              Login
-            </Button>
+              <MenuIcon />
+            </IconButton>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flex: 1,
+              }}
+            >
+              <img src={Images.logo} alt="logo" width={120} height={60} />
+            </Box>
+            {auth.token ? (
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <Button
+                  color="inherit"
+                  sx={{ textTransform: "capitalize" }}
+                  onClick={auth.logout}
+                >
+                  Salir
+                </Button>
+              </Box>
+            ) : null}
           </Toolbar>
         </AppBar>
       </Box>
-      <Drawer anchor="right" open={isDrawerOpen} onClose={toggleDrawer}>
+      <Drawer
+        anchor="left"
+        open={isDrawerOpen}
+        onClose={toggleDrawer}
+        PaperProps={{
+          sx: { width: "220px" },
+        }}
+      >
         <List
           sx={{
             backgroundColor: "#00252d",
             height: "100%",
-            width: "220px",
             display: "flex",
             flexDirection: "column",
             justifyContent: "flex-start",
             alignItems: "center",
           }}
         >
-          <ListItem buttonBase sx={{ textAlign: "center" }}>
-            <ListItemText sx={{ color: "#f1f1f1" }} primary="Propiedades" />
+          <ListItem
+            buttonbase
+            onClick={navigateToProperties}
+            sx={{ justifyContent: "center", cursor: "pointer" }}
+          >
+            <ListItemIcon>
+              <HomeIcon sx={{ color: "#f1f1f1" }} />
+            </ListItemIcon>
+            <ListItemText primary="Propiedades" sx={{ color: "#f1f1f1" }} />
           </ListItem>
-          <ListItem buttonBase sx={{ textAlign: "center" }}>
+          <ListItem
+            buttonbase
+            onClick={navigateToAddProperty}
+            sx={{ justifyContent: "center", cursor: "pointer" }}
+          >
+            <ListItemIcon>
+              <AddBoxIcon sx={{ color: "#f1f1f1" }} />
+            </ListItemIcon>
             <ListItemText
-              sx={{ color: "#f1f1f1" }}
               primary="Agregar propiedad"
+              sx={{ color: "#f1f1f1" }}
             />
           </ListItem>
         </List>
